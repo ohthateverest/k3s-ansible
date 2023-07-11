@@ -1,0 +1,30 @@
+
+- name: wait for k3s API server VIP {{ apiserver_endpoint }} to be available
+  wait_for:
+    host: "{{ apiserver_endpoint }}"
+    port: 6443
+    delay: 3
+
+- name: Create argocd namespace
+  kubernetes.core.k8s:
+    name: argocd
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: Apply argocd ConfigMap .
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'argocd-cmd-params.cm.yml.j2') | from_yaml }}"
+
+
+- name: Apply argocd manifest to the cluster.
+  kubernetes.core.k8s:
+    state: present
+    src: https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    namespace: argocd
+
+- name: Apply argocd ingress .
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'ingress.yml.j2') | from_yaml }}"

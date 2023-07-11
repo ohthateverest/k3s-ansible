@@ -6,7 +6,9 @@
   roles:
     - role: proxmox_lxc
       when: proxmox_lxc_configure
-
+  tags:
+     - k3s-init
+     
 - hosts: k3s_cluster
   gather_facts: yes
   roles:
@@ -19,35 +21,36 @@
       become: true
     - role: raspberrypi
       become: true
+  tags:
+     - k3s-init
 
 - hosts: master
   roles:
     - role: k3s/master
       become: true
+  tags:
+     - k3s-init
 
 - hosts: node
   roles:
     - role: k3s/node
       become: true
+  tags:
+     - k3s-init
 
 - hosts: master
   roles:
     - role: k3s/post
       become: true
 
-
-- hosts: master[0]
-  become: true
-  roles:
-    - role: helm
-  tags:
-      - helm
-
 - hosts: k3s_cluster
   gather_facts: true
   become: true
   roles:
     - role: reboot
+  tags:
+     - k3s-init
+
 
 - hosts: localhost
   gather_facts: false
@@ -78,3 +81,18 @@
     - role: rancher
   tags:
      - rancher
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  roles:
+    - role: argocd
+  tags:
+     - argocd
+
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  roles:
+    - role: longhorn
+  tags:
+     - longhorn
