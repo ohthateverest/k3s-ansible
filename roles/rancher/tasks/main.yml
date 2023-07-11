@@ -1,17 +1,18 @@
-- name: Create rancher config directory on first master
-  file:
-    path: /tmp/rancher
-    state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
 
-- name: Copy rancher ingressroute to first master
-  template:
-    src: "ingress.yml.j2"
-    dest: /tmp/rancher/ingress.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: 0644
+#- name: Create rancher config directory on first master
+#  file:
+#    path: /tmp/rancher
+#    state: directory
+#    owner: "{{ ansible_user }}"
+#    group: "{{ ansible_user }}"
+
+#- name: Copy rancher ingressroute to first master
+#  template:
+#    src: "ingress.yml.j2"
+#    dest: /tmp/rancher/ingress.yml
+#    owner: "{{ ansible_user }}"
+#    group: "{{ ansible_user }}"
+#    mode: 0644
 
 - name: add rancher helm repo
   command:
@@ -27,24 +28,27 @@
   wait_for:
     host: "{{ apiserver_endpoint }}"
     port: 6443
-    delay: 10
+    delay: 5
 
 - name: create the cattle-system namespace for rancher
   command:
     cmd: kubectl create namespace cattle-system
   changed_when: true
+  environment: "{{ kube_env }}"
 
 - name: deploy rancher with dns name {{ rancher_dns_name }}
   command:
     cmd: helm install rancher rancher-stable/rancher --namespace cattle-system --set hostname="{{ rancher_dns_name }}" --set ingress.enabled=false
   changed_when: true
+  environment: "{{ kube_env }}"
 
 - name: apply rancher ingressroute
   command:
     cmd: kubectl apply -f /tmp/rancher/ingress.yml
   changed_when: true
+  environment: "{{ kube_env }}"
 
-- name: Clean up rancher tmp dir
-  file:
-    path: /tmp/rancher/
-    state: absent 
+#- name: Clean up rancher tmp dir
+#  file:
+#    path: /tmp/rancher/
+#    state: absent
