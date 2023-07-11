@@ -1,8 +1,11 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: internal-tls
+  name:  internal-tls-{{ deployment_environment }}
   namespace: default
+  annotations:
+  reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+  reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "default,pxhq-htpc,cattle-system,traefik"
 spec:
   secretName: internal-tls-{{ deployment_environment }}
   issuerRef:

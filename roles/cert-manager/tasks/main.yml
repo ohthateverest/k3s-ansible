@@ -1,4 +1,4 @@
-
+---
 - name: Add stable chart repo
   kubernetes.core.helm_repository:
     name: jetstack
@@ -9,12 +9,6 @@
     host: "{{ apiserver_endpoint }}"
     port: 6443
     delay: 5
-
-- name: Apply cert-manager manifest to the cluster.
-  kubernetes.core.k8s:
-    state: absent
-    src: https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.crds.yaml
-
 
 - name: Apply cert-manager manifest to the cluster.
   kubernetes.core.k8s:
@@ -35,6 +29,7 @@
     create_namespace: true
     update_repo_cache: True
     values: "{{ lookup('template', 'values.yml.j2') | from_yaml }}"
+    wait: false
 
 - name: Apply cert-manager cloudflare secret.
   kubernetes.core.k8s:

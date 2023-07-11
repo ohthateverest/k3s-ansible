@@ -55,7 +55,7 @@
   roles:
    - role: cert-manager
   tags:
-     - cert-manger
+     - certmanager
 
 - hosts: localhost
   gather_facts: false
@@ -64,6 +64,13 @@
     - role: traefik
   tags:
      - traefik
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  roles:
+    - role: reflector
+  tags:
+     - reflector
 - hosts: localhost
   gather_facts: false
   connection: local

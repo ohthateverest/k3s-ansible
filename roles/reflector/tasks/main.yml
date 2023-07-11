@@ -1,0 +1,27 @@
+---
+
+- name: Add reflector stable helm chart repo
+  kubernetes.core.helm_repository:
+    name: reflector
+    repo_url: "https://emberstack.github.io/helm-charts"
+    state: absent
+
+- name: Add reflector stable helm chart repo
+  kubernetes.core.helm_repository:
+    name: emberstack
+    repo_url: "https://emberstack.github.io/helm-charts"
+    state: present
+
+- name: wait for k3s API server VIP {{ apiserver_endpoint }} to be available
+  wait_for:
+    host: "{{ apiserver_endpoint }}"
+    port: 6443
+    delay: 5
+
+- name: Deploy version of reflector chart inside traefik namespace (and create it)
+  kubernetes.core.helm:
+    name: reflector
+    chart_ref: emberstack/reflector
+    update_repo_cache: True
+    release_namespace: default
+    wait: true
