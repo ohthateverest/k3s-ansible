@@ -1,0 +1,8 @@
+- name: Create ~/.kube directory on Ansible Host
+  file:
+    path: ~/.kube/
+    state: directory
+
+- name: Copy Kubectl Config to Ansible Host
+  local_action: ansible.builtin.command scp -i ~/.ssh/no-passwd {{ ansible_user }}@{{ inventory_hostname }}:~/.kube/config ~/.kube/config
+  changed_when: true

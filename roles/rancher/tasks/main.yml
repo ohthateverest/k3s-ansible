@@ -10,7 +10,7 @@
     port: 6443
     delay: 5
 
-- name: Deploy version of traefik chart inside traefik namespace (and create it)
+- name: Deploy version of rancher helm chart inside cattle-system namespace (and create it)
   kubernetes.core.helm:
     name: rancher
     chart_ref: rancher-stable/rancher
@@ -19,7 +19,7 @@
     update_repo_cache: True
     values: "{{ lookup('template', 'values.yml.j2') | from_yaml }}"
 
-- name: Apply traefik ingress .
+- name: Apply rancher ingress .
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'ingress.yml.j2') | from_yaml }}"

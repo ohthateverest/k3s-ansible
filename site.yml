@@ -8,6 +8,7 @@
       when: proxmox_lxc_configure
   tags:
      - k3s-init
+     - provision-cluster
 
 - hosts: k3s_cluster
   gather_facts: yes
@@ -23,6 +24,7 @@
       become: true
   tags:
      - k3s-init
+     - provision-cluster
 
 - hosts: master
   roles:
@@ -30,6 +32,7 @@
       become: true
   tags:
      - k3s-init
+     - provision-cluster
 
 - hosts: node
   roles:
@@ -37,6 +40,7 @@
       become: true
   tags:
      - k3s-init
+     - provision-cluster
 
 - hosts: master
   roles:
@@ -44,6 +48,8 @@
       become: true
   tags:
      - k3s-init
+     - provision-cluster
+     - master-post
 
 - hosts: k3s_cluster
   gather_facts: true
@@ -52,7 +58,15 @@
     - role: reboot
   tags:
      - k3s-init
+     - provision-cluster
+     - reboot
 
+- hosts: master[0]
+  roles:
+   - role: kubeconfig
+  tags:
+     - kubeconfig
+     - provision-cluster
 
 - hosts: localhost
   gather_facts: false
@@ -61,6 +75,7 @@
    - role: cert-manager
   tags:
      - certmanager
+     - provision-cluster
 
 - hosts: localhost
   gather_facts: false
@@ -69,6 +84,7 @@
     - role: traefik
   tags:
      - traefik
+     - provision-cluster
 - hosts: localhost
   gather_facts: false
   connection: local
@@ -76,6 +92,7 @@
     - role: reflector
   tags:
      - reflector
+     - provision-cluster
 - hosts: localhost
   gather_facts: false
   connection: local
@@ -83,6 +100,7 @@
     - role: rancher
   tags:
      - rancher
+     - provision-cluster
 - hosts: localhost
   gather_facts: false
   connection: local
@@ -90,6 +108,7 @@
     - role: argocd
   tags:
      - argocd
+     - provision-cluster
 
 - hosts: localhost
   gather_facts: false
